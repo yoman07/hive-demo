@@ -1,0 +1,16 @@
+{
+    "rent_timeout" : 5000,
+
+    "pools" : {
+	"backend" : {
+	    "connector" : "connector.http",
+	    "size" : 16,
+	    "overflow" : 0,
+	    "args" : {
+	    	"base_url" : "http://127.0.0.1",
+		"max_connections" : 16,
+		"max_connection_timeout" : 5000
+	    }
+	}
+    }
+}
