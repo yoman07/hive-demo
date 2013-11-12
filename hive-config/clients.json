@@ -1,0 +1,155 @@
+{
+    "state" : {
+	"state_manager" : "sm.local",
+	
+        "initial_value" : null,
+
+	"args" : null 
+    },
+
+    "actions" : {
+    	"stop" : [
+	    {
+		"action" : "action.stop",
+		"args" : null
+	    }
+	],
+
+	"error" : [
+	    {
+		"action" : "action.error",
+		"args" : null
+	    }
+	],
+
+	"event" : [
+	    {
+		"action" : "action.send_event",
+		"args" : null
+	    }
+	],
+
+	"store" : [
+	    {
+		"action" : "action.update_state",
+		"args" : null
+	    }
+	],
+
+	"dispatch" : [
+	    {
+		"action" : "action.dispatch",
+		"args" : null
+	    }
+	],
+
+	"add_hooks" : [
+	    {
+		"action" : "action.add_hooks",
+		"args" : null
+	    }
+	],
+
+	"remove_hooks" : [
+	    {
+		"action" : "action.remove_hooks",
+		"args" : null
+	    }
+	],
+
+	"start_connectors" : [
+	    {
+		"action" : "action.start_connectors",
+		"args" : null
+	    }
+	],
+
+	"stop_connectors" : [
+	    {
+		"action" : "action.stop_connectors",
+		"args" : null
+	    }
+	]
+    },
+
+    "hooks" : {
+        "auth" : [
+            {
+                "hook" : "cp.post",
+                "args" : {
+                    "connector" : "backend",
+                    "endpoint" : "/auth"
+                }
+            }
+        ],
+        "private.send" : [
+            {
+                "hook" : "cp.put",
+                "args" : {
+                    "connector" : "backend",
+                    "endpoint" : "/private_send"
+                }
+            }
+        ],
+        "private.seen" : [
+            {
+                "hook" : "cp.put",
+                "args" : {
+                    "connector" : "backend",
+                    "endpoint" : "/private_seen"
+                }
+            }
+        ],
+        "rooster.get" : [
+            {
+                "hook" : "cp.post",
+                "args" : {
+                    "connector" : "backend",
+                    "endpoint" : "/rooster_get"
+                }
+            }
+        ],
+        "presence.appear" : [
+            {
+                "hook" : "cp.put",
+                "args" : {
+                    "connector" : "backend",
+                    "endpoint" : "/presence_appear"
+                }
+            }
+        ],
+        "presence.reappear" : [
+            {
+                "hook" : "cp.put",
+                "args" : {
+                    "connector" : "backend",
+                    "endpoint" : "/presence_reappear"
+                }
+            }
+        ],
+
+	"on_disconnect" : [
+	    {
+		"hook" : "cp.put",
+                "args" : {
+                    "endpoint" : "/cleanup",
+                    "connector" : "backend"
+                }
+	    }
+	],
+
+	"pubsub.unsubscribe" : [
+	    {
+		"hook" : "pubsub.unsubscribe",
+		"args" : "public"
+	    }
+	],
+
+	"pubsub.subscribe" : [
+	    {
+		"hook" : "pubsub.subscribe",
+		"args" : "public"
+	    }
+	]
+    }
+}
