@@ -131,20 +131,20 @@
             this.pos = Config.DOWN;
         },
         render : function( context ) {
-            context.beginPath();
-            context.rect( this.x, this.y, Config.GRID_SIZE, Config.GRID_SIZE);
-            context.closePath();
-            context.fillStyle = this.color;
-            context.fill();
-            context.stroke();
+            // context.beginPath();
+            // context.rect( this.x, this.y, Config.GRID_SIZE, Config.GRID_SIZE);
+            // context.closePath();
+            // context.fillStyle = this.color;
+            // context.fill();
+            // context.stroke();
                 
                 context.drawImage( this.sprite, 
                     this.charX * 96 + (this.spriteFrame * Config.FRAME_WIDTH),
                     this.charY * 96 + this.pos * Config.FRAME_HEIGHT,
                     Config.FRAME_WIDTH,
                     Config.FRAME_HEIGHT, 
-                    this.x, this.y,
-                    Config.GRID_SIZE * Config.SCALE, 
+                    this.x + Config.GRID_SIZE * 0.2, this.y,
+                    Config.GRID_SIZE * 0.8, 
                     Config.GRID_SIZE
                 );
 
