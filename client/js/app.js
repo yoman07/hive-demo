@@ -1,9 +1,18 @@
 (function() {
 	"use strict";
 
+    window.requestAnimFrame = (function(){
+      return  window.requestAnimationFrame       ||
+              window.webkitRequestAnimationFrame ||
+              window.mozRequestAnimationFrame    ||
+              function( callback ){
+                window.setTimeout(callback, 1000 / 60);
+              };
+    })();
+
     var Config = {
         SERVER_ADDR : 'http://144.76.114.228:7878',
-        GRID_SIZE : 50
+        GRID_SIZE : 25
     }
 
     var Helper = {
@@ -131,16 +140,40 @@
             var self = this;
 
             $('#left').on('click',function() {
-                self.player.x -=50;
+                self.player.x -=Config.GRID_SIZE;
             });
             $('#right').on('click',function() {
-                self.player.x +=50;
+                self.player.x +=Config.GRID_SIZE;
             });
             $('#up').on('click',function() {
-                self.player.y -=50;
+                self.player.y -=Config.GRID_SIZE;
             });
             $('#down').on('click',function() {
-                self.player.y +=50;
+                self.player.y +=Config.GRID_SIZE;
+            });
+
+            $(window).on('keyup', function( event ) {
+                switch( event.keyCode ) {
+                    case 40:
+                        self.player.y +=Config.GRID_SIZE;
+                    break;
+                    case 37:
+                    
+                        self.player.x -=Config.GRID_SIZE;    
+                    break;
+                    case 38:
+                    self.player.y -=Config.GRID_SIZE;
+                        
+                    
+                    
+                        
+                    break;
+                    case 39:
+                    self.player.x +=Config.GRID_SIZE;
+                    
+                        
+                    break;
+                }
             });
 
             $('#controls > div').on('click.controls', function() {
@@ -150,7 +183,7 @@
             })
         },
         loop : function() {
-            requestAnimationFrame( Game.loop );
+            window.requestAnimFrame( Game.loop );
             Game.render();
         },
         generateGrid : function() {
