@@ -60,7 +60,7 @@
                 var l = this.children.length;
 
                 for( var i = 0; i < l; i++ ) {
-                    if ( this.children[i].name === nick ) {
+                    if ( this.children[i].name === name ) {
                         return this.children[i];
                     }
                 }
@@ -106,7 +106,7 @@
                     var pla = self.scene.find( data.name );
                     
                     if ( !pla ) {
-                        pla = new Player( data[i].x, data[i].y, data[i].name, data[i].color );
+                        pla = new Player( data.x, data.y, data.name, data.color );
                         self.scene.children.push( pla );    
                     } else {
                         pla.update( data.x, data.y );
@@ -144,8 +144,8 @@
             });
 
             $('#controls > div').on('click.controls', function() {
-                if( this.socket ) {
-                    this.socket.emit('player.move', self.player.serialize() );    
+                if( self.socket ) {
+                    self.socket.emit('player.move', self.player.serialize() );    
                 }
             })
         },
