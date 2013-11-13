@@ -33,14 +33,20 @@
         },
         randomColor : function() {
             return "#" + ( ( 1<<24 ) * Math.random() | 0 ).toString( 16 );
+        },
+        randomName : function() {
+            return 'Gracz - ' + this.random(1,9999);
         }
     }
 
-    function Player( x, y, name, color ) {
+    function Player( x, y, name, color, ctrl ) {
         this.x = x;
         this.y = y;
         this.name = name;
         this.color = color || Helper.randomColor();
+        this.me = ctrl || false;
+
+        this.pos = Config.DOWN;
 
         this.sprite = new Image();
         this.sprite.src = "asset/aaa.png";
@@ -60,9 +66,23 @@
         },
         update : function( x, y ) {
             if ( typeof x !== 'undefined' ) {
+
+                if ( x > this.x ) {
+                    this.pos = Config.RIGHT;
+                } else if ( x < this.x ) {
+                    this.pos = Config.LEFT;
+                }
+
                 this.x = x;
             }
             if ( typeof y !== 'undefined' ) {
+
+                if ( y > this.y ) {
+                    this.pos = Config.DOWN;
+                } else if ( y < this.y ) {
+                    this.pos = Config.UP;
+                }
+
                 this.y = y;
             }
         },
@@ -131,7 +151,7 @@
             context.fillStyle = '#eee';
             context.font = 'italic bold 15px sans-serif';
             context.textBaseline = 'bottom';
-            context.fillText(this.name, this.x, this.y);
+            context.fillText( this.name, this.x + Config.GRID_SIZE, this.y);
             
         }
     }
@@ -311,9 +331,10 @@
     }
 
     $(document).ready(function() {
+        Game.initialize( new Player(50, 50, Helper.randomName(), Helper.randomColor(), true) );
         $('.run').off().on('click', function() {
             var name = $('.name').val();
-            Game.initialize( new Player(50, 50, name, Helper.randomColor()) );
+            
             $('.init').remove();
         });
     });
