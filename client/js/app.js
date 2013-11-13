@@ -12,8 +12,20 @@
 
     var Config = {
         SERVER_ADDR : 'http://144.76.114.228:7878',
-        GRID_SIZE : 25
+        GRID_SIZE : 50,
+        SPEED : 50,
+        FRAME_WIDTH : 32,
+        FRAME_HEIGHT : 32,
+        LEFT : 1,
+        RIGHT : 2,
+        UP : 3,
+        DOWN : 0,
+        SCALE : 1,
+        FRAMES : 2
     }
+
+    var Grass = new Image();
+    Grass.src = 'https://sites.google.com/site/jayjay09/grass1.jpg';
 
     var Helper = {
         random : function( min, max ) {
@@ -29,6 +41,12 @@
         this.y = y;
         this.name = name;
         this.color = color || Helper.randomColor();
+
+        this.sprite = new Image();
+        this.sprite.src = "asset/aaa.png";
+        this.charX = Helper.random(0,3);
+        this.charY = Helper.random(0,1);
+        this.spriteFrame = 0;
     }
 
     Player.prototype = {
@@ -48,6 +66,50 @@
                 this.y = y;
             }
         },
+        moveRight : function() {
+
+            if( this.pos === Config.RIGHT && this.spriteFrame < Config.FRAMES ) {
+                this.spriteFrame++;
+            } else {
+                this.spriteFrame = 0;
+            }
+
+            this.x += Config.SPEED;
+            this.pos = Config.RIGHT;
+        },
+        moveLeft : function() {
+
+            if( this.pos === Config.LEFT && this.spriteFrame < Config.FRAMES ) {
+                this.spriteFrame++;
+            } else {
+                this.spriteFrame = 0;
+            }
+
+            this.x -= Config.SPEED;
+            this.pos = Config.LEFT;
+        },
+        moveUp : function() {
+
+            if( this.pos === Config.UP && this.spriteFrame < Config.FRAMES ) {
+                this.spriteFrame++;
+            } else {
+                this.spriteFrame = 0;
+            }
+
+            this.y -= Config.SPEED;
+            this.pos = Config.UP;
+        },
+        moveDown : function() {
+
+            if( this.pos === Config.DOWN && this.spriteFrame < Config.FRAMES ) {
+                this.spriteFrame++;
+            } else {
+                this.spriteFrame = 0;
+            }
+
+            this.y += Config.SPEED;
+            this.pos = Config.DOWN;
+        },
         render : function( context ) {
             context.beginPath();
             context.rect( this.x, this.y, Config.GRID_SIZE, Config.GRID_SIZE);
@@ -55,6 +117,22 @@
             context.fillStyle = this.color;
             context.fill();
             context.stroke();
+                
+                context.drawImage( this.sprite, 
+                    this.charX * 96 + (this.spriteFrame * Config.FRAME_WIDTH),
+                    this.charY * 96 + this.pos * Config.FRAME_HEIGHT,
+                    Config.FRAME_WIDTH,
+                    Config.FRAME_HEIGHT, 
+                    this.x, this.y,
+                    Config.GRID_SIZE * Config.SCALE, 
+                    Config.GRID_SIZE
+                );
+
+            context.fillStyle = '#eee';
+            context.font = 'italic bold 15px sans-serif';
+            context.textBaseline = 'bottom';
+            context.fillText(this.name, this.x, this.y);
+            
         }
     }
 
@@ -140,39 +218,36 @@
             var self = this;
 
             $('#left').on('click',function() {
-                self.player.x -=Config.GRID_SIZE;
+                self.player.moveLeft();
             });
             $('#right').on('click',function() {
-                self.player.x +=Config.GRID_SIZE;
+                self.player.moveRight();
             });
             $('#up').on('click',function() {
-                self.player.y -=Config.GRID_SIZE;
+                self.player.moveUp();
             });
             $('#down').on('click',function() {
-                self.player.y +=Config.GRID_SIZE;
+                self.player.moveDown();
             });
 
             $(window).on('keyup', function( event ) {
                 switch( event.keyCode ) {
                     case 40:
-                        self.player.y +=Config.GRID_SIZE;
+                        self.player.moveDown();
                     break;
                     case 37:
-                    
-                        self.player.x -=Config.GRID_SIZE;    
+                        self.player.moveLeft();
                     break;
                     case 38:
-                    self.player.y -=Config.GRID_SIZE;
-                        
-                    
-                    
-                        
+                        self.player.moveUp();
                     break;
                     case 39:
-                    self.player.x +=Config.GRID_SIZE;
-                    
-                        
+                        self.player.moveRight();
                     break;
+                }
+
+                if( self.socket ) {
+                    self.socket.emit('player.move', self.player.serialize() );    
                 }
             });
 
@@ -223,6 +298,8 @@
         render : function() {
 
             this.context.clearRect( 0, 0, window.innerWidth, window.innerHeight );
+            this.context.drawImage( Grass,0,0 );
+
             this.generateGrid();
 
             var l = this.scene.children.length;
