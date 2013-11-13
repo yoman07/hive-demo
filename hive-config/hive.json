@@ -26,8 +26,8 @@
 
     "pubsub" : {
     	"channels" : {
-    	    "notify" : {
-		"privilege" : "public",
+    	    "player" : {
+		"privilege" : "private",
 		"timeout" : 25000 
 	    }
 	}

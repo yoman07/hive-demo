@@ -1,9 +1,7 @@
 {
     "state" : {
 	"state_manager" : "sm.local",
-	
         "initial_value" : null,
-
 	"args" : null 
     },
 
@@ -22,7 +20,7 @@
 	    }
 	],
 
-	"event" : [
+	"reply" : [
 	    {
 		"action" : "action.send_event",
 		"args" : null
@@ -150,6 +148,24 @@
 		"hook" : "pubsub.subscribe",
 		"args" : "public"
 	    }
+	],
+	"player.new" : [
+		{
+			"hook" : "cp.post",
+			"args" : {
+				"endpoint" : "/player_new",
+				"connector" : "backend"
+			}
+		}
+	],
+	"player.move" : [
+		{
+			"hook" : "cp.put",
+			"args" : {
+				"endpoint" : "/player_move",
+				"connector" : "backend"
+			}
+		}
 	]
     }
 }
