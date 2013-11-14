@@ -2,18 +2,22 @@
 	"use strict";
 
     window.requestAnimFrame = (function(){
-      return  window.requestAnimationFrame       ||
-              window.webkitRequestAnimationFrame ||
-              window.mozRequestAnimationFrame    ||
-              function( callback ){
-                window.setTimeout(callback, 1000 / 60);
-              };
+        return window.requestAnimationFrame ||
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame;
     })();
 
+    if ( !window.requestAnimFrame ) {
+        window.requestAnimFrame = function( callback ) {
+            window.setTimeout(callback, 1000 / 30);
+        };
+    }
+
     var Config = {
-        SERVER_ADDR : 'http://144.76.114.228:7878',
+        SERVER_ADDR : 'http://144.76.114.228',
+        PLANE_SIZE : 1200,
         GRID_SIZE : 50,
-        SPEED : 50,
+        SPEED : 25,
         FRAME_WIDTH : 32,
         FRAME_HEIGHT : 32,
         LEFT : 1,
@@ -22,27 +26,46 @@
         DOWN : 0,
         SCALE : 1,
         FRAMES : 2
-    }
+    };
 
-    var Grass = new Image();
-    Grass.src = 'https://sites.google.com/site/jayjay09/grass1.jpg';
+    // var Grass = new Image();
+    // Grass.src = 'https://sites.google.com/site/jayjay09/grass1.jpg';
 
     var Helper = {
         random : function( min, max ) {
-            return Math.floor( min + Math.random() * max );
+            return Math.round( min + Math.random() * max );
         },
         randomColor : function() {
             return "#" + ( ( 1<<24 ) * Math.random() | 0 ).toString( 16 );
         },
         randomName : function() {
-            return 'Gracz - ' + this.random(1,9999);
+            return 'Luki ' + Pro() + ' ' + this.random(1,9999);
         }
+    };
+
+    function Pro() {
+        var a = [
+            'the Great',
+            'the Villain',
+            'the Maiden',
+            'the King',
+            'the Knight',
+            'the Horse',
+            'the Peasant',
+            'the Programmer',
+            'the Cook',
+            'the Whore',
+            'the Priest',
+            'the Zombie'
+        ];
+
+        return a[ Helper.random(0, a.length - 1 )];
     }
 
-    function Player( x, y, name, color, ctrl ) {
+    function Player(x,y,name,color,ctrl) {
         this.x = x;
         this.y = y;
-        this.name = name;
+        this._name = name;
         this.color = color || Helper.randomColor();
         this.me = ctrl || false;
 
@@ -51,20 +74,25 @@
         this.sprite = new Image();
         this.sprite.src = "asset/aaa.png";
         this.charX = Helper.random(0,3);
-        this.charY = Helper.random(0,1);
+        this.charY = 0; //Helper.random(0,1);
         this.spriteFrame = 0;
     }
 
     Player.prototype = {
         serialize : function() {
             return {
-                'name' : this.name,
+                'name' : this._name,
                 'color' : this.color,
                 'x' : this.x,
                 'y' : this.y
             }
         },
         update : function( x, y ) {
+
+            if ( this.me ) {
+                return;
+            }
+
             if ( typeof x !== 'undefined' ) {
 
                 if ( x > this.x ) {
@@ -140,23 +168,22 @@
                 
                 context.drawImage( this.sprite, 
                     this.charX * 96 + (this.spriteFrame * Config.FRAME_WIDTH),
-                    this.charY * 96 + this.pos * Config.FRAME_HEIGHT,
+                    this.charY * 96 + (this.pos * Config.FRAME_HEIGHT),
                     Config.FRAME_WIDTH,
                     Config.FRAME_HEIGHT, 
-                    this.x + Config.GRID_SIZE * 0.2, this.y,
-                    Config.GRID_SIZE * 0.8, 
+                    this.x, this.y,
+                    Config.GRID_SIZE, 
                     Config.GRID_SIZE
                 );
 
-            context.fillStyle = '#eee';
+            context.fillStyle = '#222';
             context.font = 'italic bold 15px sans-serif';
             context.textBaseline = 'bottom';
-            context.fillText( this.name, this.x + Config.GRID_SIZE, this.y);
-            
+            context.fillText( this._name, this.x + Config.GRID_SIZE, this.y);
         }
     }
 
-    var Game = {
+    window.Game = {
         $canvas : null,
         context : null,
         socket : null,
@@ -167,12 +194,37 @@
                 var l = this.children.length;
 
                 for( var i = 0; i < l; i++ ) {
-                    if ( this.children[i].name === name ) {
+                    if ( this.children[i]._name === name ) {
                         return this.children[i];
                     }
                 }
                 return null;
             }
+        },
+        pilot : function( player ) {
+            var self = this;
+            this.player = player;
+
+            this.initNetwork();
+            
+            $('#left').on('click',function() {
+                self.player.moveLeft();
+            });
+            $('#right').on('click',function() {
+                self.player.moveRight();
+            });
+            $('#up').on('click',function() {
+                self.player.moveUp();
+            });
+            $('#down').on('click',function() {
+                self.player.moveDown();
+            });
+
+            $('#controls > div').on('click.controls', function() {
+                if( self.socket ) {
+                    self.socket.emit('player.move', self.player.serialize() );    
+                }
+            });
         },
         initialize : function( player ) {
             this.$canvas = $('#canvas');
@@ -187,14 +239,24 @@
             var self = this;
 
             if ( this.player ) {
+                this.socket = io.connect( Config.SERVER_ADDR, {
+                    port : '7878',
+                    'transports' : ['websocket'],
+                    'reconnection delay' : 10000,
+                    'reconnection limit': 10,
+                    'max reconnection attempts': 11
+                } );
 
-                this.socket = io.connect( Config.SERVER_ADDR );
-                
                 this.socket.on('connect', function ( data ) {
                     self.scene.children = [];
 
                     self.socket.emit('player.new', self.player.serialize() );
                     self.scene.children.push( self.player );
+                });
+
+                this.socket.on('disconnect', function ( data ) {
+                    
+                    alert('disconnected!');
                 });
 
                 this.socket.on('player.all', function ( data ) {
@@ -225,30 +287,17 @@
             var self = this;
 
             function resize() {
-                self.$canvas.css('width', window.innerWidth + 'px');
-                self.$canvas.css('height', window.innerHeight + 'px');
+                self.$canvas.css('width', Config.PLANE_SIZE + 'px');
+                self.$canvas.css('height', Config.PLANE_SIZE + 'px');
             }
 
-            $(window).on('resize', resize);
+            // $(window).on('resize', resize);
             resize();
 
             this.loop();
         },
         setupControls : function() {
             var self = this;
-
-            $('#left').on('click',function() {
-                self.player.moveLeft();
-            });
-            $('#right').on('click',function() {
-                self.player.moveRight();
-            });
-            $('#up').on('click',function() {
-                self.player.moveUp();
-            });
-            $('#down').on('click',function() {
-                self.player.moveDown();
-            });
 
             $(window).on('keyup', function( event ) {
                 switch( event.keyCode ) {
@@ -270,12 +319,6 @@
                     self.socket.emit('player.move', self.player.serialize() );    
                 }
             });
-
-            $('#controls > div').on('click.controls', function() {
-                if( self.socket ) {
-                    self.socket.emit('player.move', self.player.serialize() );    
-                }
-            })
         },
         loop : function() {
             window.requestAnimFrame( Game.loop );
@@ -284,30 +327,25 @@
         generateGrid : function() {
             this.context.save();
 
-            this.context.strokeStyle = '#adaada';
+            this.context.strokeStyle = 'rgba(240,240,240,0.6)';
             this.context.lineWidth = 1;
             // this.context.globalCompositeOperation = 'source-atop';
 
-            var position = {
-                x: 0,
-                y: 0
-            }, x = 0, y = 0;
-
-            for (x = 0; x <= window.innerWidth + Config.GRID_SIZE; x += Config.GRID_SIZE) {
+            for (var x = Config.GRID_SIZE; x <= Config.PLANE_SIZE; x += Config.GRID_SIZE) {
                 this.context.beginPath();
                 
-                this.context.moveTo(position.x + x, position.y ); 
-                this.context.lineTo(position.x + x, position.y + window.innerHeight );
+                this.context.moveTo( x, 0 ); 
+                this.context.lineTo( x, Config.PLANE_SIZE );
                 
                 this.context.closePath();
                 this.context.stroke();
             }
 
-            for (y = 0; y <= window.innerHeight + Config.GRID_SIZE; y += Config.GRID_SIZE) {
+            for ( var y = Config.GRID_SIZE; y <= Config.PLANE_SIZE; y += Config.GRID_SIZE) {
                 this.context.beginPath();
                 
-                this.context.moveTo(position.x, position.y + y ); 
-                this.context.lineTo(position.x + window.innerWidth, position.y + y );
+                this.context.moveTo( 0, y ); 
+                this.context.lineTo( Config.PLANE_SIZE, y );
                 
                 this.context.closePath();
                 this.context.stroke();
@@ -317,8 +355,8 @@
         },
         render : function() {
 
-            this.context.clearRect( 0, 0, window.innerWidth, window.innerHeight );
-            this.context.drawImage( Grass,0,0 );
+            this.context.clearRect( 0, 0, Config.PLANE_SIZE, Config.PLANE_SIZE );
+            // this.context.drawImage( Grass,0,0 );
 
             this.generateGrid();
 
@@ -331,11 +369,13 @@
     }
 
     $(document).ready(function() {
-        Game.initialize( new Player(50, 50, Helper.randomName(), Helper.randomColor(), true) );
-        $('.run').off().on('click', function() {
-            var name = $('.name').val();
-            
-            $('.init').remove();
-        });
+        var _pilot = window._pilot || false;
+        
+        if( _pilot ) {
+            Game.pilot( new Player(50, 50, Helper.randomName(), Helper.randomColor(), true) );
+        } else {
+            Game.initialize( new Player(50, 50, Helper.randomName(), Helper.randomColor(), true) );
+        }
+        
     });
 })();
