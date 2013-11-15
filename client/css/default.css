@@ -13,18 +13,21 @@ html, body {
     z-index: 0;
 }
 #controls {
-
+    position: fixed;
+    bottom: 0px;
+    z-index: 5;
+    right:0px;
 }
 #controls > div {
     padding: 0px;
     background-color: #bababa;
     border: 1px solid #ababab;
     cursor: pointer;
-    width: 100px;
-    height: 60px;
+    width: 180px;
+    height: 120px;
     transition: all .5s;
     -webkit-transition: all .5s;
-    line-height: 60px;
+    line-height: 120px;
     text-align: center;
 }
 #controls .first > div {

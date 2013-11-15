@@ -16,8 +16,8 @@
     var Config = {
         SERVER_ADDR : 'http://144.76.114.228',
         PLANE_SIZE : 1200,
-        GRID_SIZE : 50,
-        SPEED : 25,
+        GRID_SIZE : 30,
+        SPEED : 30,
         FRAME_WIDTH : 32,
         FRAME_HEIGHT : 32,
         LEFT : 1,
@@ -50,12 +50,13 @@
             'the Maiden',
             'the King',
             'the Knight',
+            'the Lover',
             'the Horse',
             'the Peasant',
             'the Programmer',
             'the Cook',
-            'the Whore',
             'the Priest',
+            'the Mystery Man',
             'the Zombie'
         ];
 
@@ -206,25 +207,7 @@
             this.player = player;
 
             this.initNetwork();
-            
-            $('#left').on('click',function() {
-                self.player.moveLeft();
-            });
-            $('#right').on('click',function() {
-                self.player.moveRight();
-            });
-            $('#up').on('click',function() {
-                self.player.moveUp();
-            });
-            $('#down').on('click',function() {
-                self.player.moveDown();
-            });
-
-            $('#controls > div').on('click.controls', function() {
-                if( self.socket ) {
-                    self.socket.emit('player.move', self.player.serialize() );    
-                }
-            });
+            this.pilotControls();
         },
         initialize : function( player ) {
             this.$canvas = $('#canvas');
@@ -270,6 +253,15 @@
                         }
                     }
                 });
+                this.socket.on('player.bye', function ( data ) {
+                    var pla = self.scene.find( data.name );
+                    
+                    if ( pla ) {
+                        // pla = null;
+
+                        self.scene.children.splice( self.scene.children.indexOf( pla ), 1);
+                    }
+                });
 
                 this.socket.on('player.update', function ( data ) {
                     var pla = self.scene.find( data.name );
@@ -296,8 +288,32 @@
 
             this.loop();
         },
+        pilotControls : function() {
+            var self = this;
+
+            $('#left').on('touchend',function() {
+                self.player.moveLeft();
+            });
+            $('#right').on('touchend',function() {
+                self.player.moveRight();
+            });
+            $('#up').on('touchend',function() {
+                self.player.moveUp();
+            });
+            $('#down').on('touchend',function() {
+                self.player.moveDown();
+            });
+
+            $('#controls > div').on('touchend.controls', function() {
+                if( self.socket ) {
+                    self.socket.emit('player.move', self.player.serialize() );    
+                }
+            });
+        },
         setupControls : function() {
             var self = this;
+
+            self.pilotControls();
 
             $(window).on('keyup', function( event ) {
                 switch( event.keyCode ) {
@@ -363,7 +379,10 @@
             var l = this.scene.children.length;
 
             for ( var i = 0; i < l; i++ ) {
-                this.scene.children[i].render( this.context );
+                if ( this.scene.children[i] ) {
+                    this.scene.children[i].render( this.context );    
+                } 
+                
             }
         }
     }
@@ -372,9 +391,9 @@
         var _pilot = window._pilot || false;
         
         if( _pilot ) {
-            Game.pilot( new Player(50, 50, Helper.randomName(), Helper.randomColor(), true) );
+            Game.pilot( new Player(Helper.random(1,15) * Config.GRID_SIZE, Helper.random(1,15) * Config.GRID_SIZE, Helper.randomName(), Helper.randomColor(), true) );
         } else {
-            Game.initialize( new Player(50, 50, Helper.randomName(), Helper.randomColor(), true) );
+            Game.initialize( new Player(Helper.random(1,15) * Config.GRID_SIZE, Helper.random(1,15) * Config.GRID_SIZE, Helper.randomName(), Helper.randomColor(), true) );
         }
         
     });
