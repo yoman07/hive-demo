@@ -15,17 +15,17 @@
 
     var Config = {
         SERVER_ADDR : 'http://144.76.114.228',
-        PLANE_SIZE : 1200,
+        PLANE_SIZE : 1600,
         GRID_SIZE : 30,
         SPEED : 30,
-        FRAME_WIDTH : 32,
-        FRAME_HEIGHT : 32,
-        LEFT : 1,
-        RIGHT : 2,
+        FRAME_WIDTH : 64,
+        FRAME_HEIGHT : 64,
+        LEFT : 0,
+        RIGHT : 1,
         UP : 3,
         DOWN : 0,
         SCALE : 1,
-        FRAMES : 2
+        FRAMES : 9
     };
 
     // var Grass = new Image();
@@ -73,8 +73,8 @@
         this.pos = Config.DOWN;
 
         this.sprite = new Image();
-        this.sprite.src = "asset/aaa.png";
-        this.charX = Helper.random(0,3);
+        this.sprite.src = "asset/qqq2.png";
+        this.charX = 0;
         this.charY = 0; //Helper.random(0,1);
         this.spriteFrame = 0;
     }
@@ -107,9 +107,9 @@
             if ( typeof y !== 'undefined' ) {
 
                 if ( y > this.y ) {
-                    this.pos = Config.DOWN;
+                    // this.pos = Config.DOWN;
                 } else if ( y < this.y ) {
-                    this.pos = Config.UP;
+                    // this.pos = Config.UP;
                 }
 
                 this.y = y;
@@ -139,25 +139,25 @@
         },
         moveUp : function() {
 
-            if( this.pos === Config.UP && this.spriteFrame < Config.FRAMES ) {
+            if( /* this.pos === Config.UP && */ this.spriteFrame < Config.FRAMES ) {
                 this.spriteFrame++;
             } else {
                 this.spriteFrame = 0;
             }
 
             this.y -= Config.SPEED;
-            this.pos = Config.UP;
+            // this.pos = Config.UP;
         },
         moveDown : function() {
 
-            if( this.pos === Config.DOWN && this.spriteFrame < Config.FRAMES ) {
+            if( /* this.pos === Config.DOWN  && */ this.spriteFrame < Config.FRAMES ) {
                 this.spriteFrame++;
             } else {
                 this.spriteFrame = 0;
             }
 
             this.y += Config.SPEED;
-            this.pos = Config.DOWN;
+            // this.pos = Config.DOWN;  
         },
         render : function( context ) {
             // context.beginPath();
@@ -234,8 +234,9 @@
                     self.scene.children = [];
 
                     self.socket.emit('player.new', self.player.serialize() );
-                    self.scene.children.push( self.player );
+                    
                 });
+                self.scene.children.push( self.player );
 
                 this.socket.on('disconnect', function ( data ) {
                     
