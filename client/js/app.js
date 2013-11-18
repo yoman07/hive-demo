@@ -15,9 +15,9 @@
 
     var Config = {
         SERVER_ADDR : 'http://144.76.114.228',
-        PLANE_SIZE : 1600,
-        GRID_SIZE : 30,
-        SPEED : 30,
+        PLANE_SIZE : 800,
+        GRID_SIZE : 50,
+        SPEED : 50,
         FRAME_WIDTH : 64,
         FRAME_HEIGHT : 64,
         LEFT : 0,
@@ -28,8 +28,15 @@
         FRAMES : 9
     };
 
-    // var Grass = new Image();
-    // Grass.src = 'https://sites.google.com/site/jayjay09/grass1.jpg';
+    var Rocket = new Image();
+    Rocket.src = 'asset/rocket.png';
+
+    var Cloud1 = new Image();
+    Cloud1.src = 'asset/cloud-big-white.png';
+    var Cloud2 = new Image();
+    Cloud2.src = 'asset/cloud1.png';
+    var Cloud3 = new Image();
+    Cloud3.src = 'asset/cloud2.png';
 
     var Helper = {
         random : function( min, max ) {
@@ -73,10 +80,11 @@
         this.pos = Config.DOWN;
 
         this.sprite = new Image();
-        this.sprite.src = "asset/qqq2.png";
+        this.sprite.src = "asset/qqq.png";
         this.charX = 0;
         this.charY = 0; //Helper.random(0,1);
         this.spriteFrame = 0;
+        this.lastUpdate = 0;
     }
 
     Player.prototype = {
@@ -113,6 +121,12 @@
                 }
 
                 this.y = y;
+            }
+
+            if( this.spriteFrame < Config.FRAMES ) {
+                this.spriteFrame++;
+            } else {
+                this.spriteFrame = 0;
             }
         },
         moveRight : function() {
@@ -167,20 +181,32 @@
             // context.fill();
             // context.stroke();
                 
-                context.drawImage( this.sprite, 
-                    this.charX * 96 + (this.spriteFrame * Config.FRAME_WIDTH),
-                    this.charY * 96 + (this.pos * Config.FRAME_HEIGHT),
-                    Config.FRAME_WIDTH,
-                    Config.FRAME_HEIGHT, 
-                    this.x, this.y,
-                    Config.GRID_SIZE, 
-                    Config.GRID_SIZE
-                );
+            context.drawImage( this.sprite, 
+                this.charX * 96 + (this.spriteFrame * Config.FRAME_WIDTH),
+                this.charY * 96 + (this.pos * Config.FRAME_HEIGHT),
+                Config.FRAME_WIDTH,
+                Config.FRAME_HEIGHT, 
+                this.x, this.y,
+                Config.GRID_SIZE, 
+                Config.GRID_SIZE
+            );
 
             context.fillStyle = '#222';
             context.font = 'italic bold 15px sans-serif';
             context.textBaseline = 'bottom';
             context.fillText( this._name, this.x + Config.GRID_SIZE, this.y);
+
+            if ( this.lastUpdate < 1 ) {
+                this.lastUpdate++;
+            } else {
+                this.lastUpdate = 0;
+
+                if( this.spriteFrame < Config.FRAMES ) {
+                    this.spriteFrame++;
+                } else {
+                    this.spriteFrame = 0;
+                }
+            }
         }
     }
 
@@ -189,6 +215,10 @@
         context : null,
         socket : null,
         player : null,
+        rocket : {
+            x : -100,
+            y : 1000
+        },
         scene : {
             children : [],
             find : function( name ) {
@@ -224,7 +254,7 @@
             if ( this.player ) {
                 this.socket = io.connect( Config.SERVER_ADDR, {
                     port : '7878',
-                    'transports' : ['websocket'],
+                    'transports' : ['websocket', 'xhr-polling'],
                     'reconnection delay' : 10000,
                     'reconnection limit': 10,
                     'max reconnection attempts': 11
@@ -233,14 +263,13 @@
                 this.socket.on('connect', function ( data ) {
                     self.scene.children = [];
 
+                    self.scene.children.push( self.player );
                     self.socket.emit('player.new', self.player.serialize() );
-                    
                 });
-                self.scene.children.push( self.player );
 
                 this.socket.on('disconnect', function ( data ) {
                     
-                    alert('disconnected!');
+                    // alert('disconnected!');
                 });
 
                 this.socket.on('player.all', function ( data ) {
@@ -258,8 +287,6 @@
                     var pla = self.scene.find( data.name );
                     
                     if ( pla ) {
-                        // pla = null;
-
                         self.scene.children.splice( self.scene.children.indexOf( pla ), 1);
                     }
                 });
@@ -280,11 +307,11 @@
             var self = this;
 
             function resize() {
-                self.$canvas.css('width', Config.PLANE_SIZE + 'px');
-                self.$canvas.css('height', Config.PLANE_SIZE + 'px');
+                self.$canvas.attr('width', Config.PLANE_SIZE * 2 + 'px');
+                self.$canvas.attr('height', Config.PLANE_SIZE + 'px');
             }
 
-            // $(window).on('resize', resize);
+            $(window).on('resize', resize);
             resize();
 
             this.loop();
@@ -310,6 +337,10 @@
                     self.socket.emit('player.move', self.player.serialize() );    
                 }
             });
+
+            $('#ui button').on('click.controls', function() {
+                self.player._name = $.trim( $('#ui .name').val() );
+            });
         },
         setupControls : function() {
             var self = this;
@@ -330,6 +361,9 @@
                     case 39:
                         self.player.moveRight();
                     break;
+                    case 32:
+                        // self.stop();
+                    break;
                 }
 
                 if( self.socket ) {
@@ -337,22 +371,38 @@
                 }
             });
         },
+        stop : function() {
+            if( !this.stopped ) {
+                this.stopped = true;
+                return;
+            }
+
+            this.stopped = false;
+            
+        },
         loop : function() {
             window.requestAnimFrame( Game.loop );
             Game.render();
         },
+        generateGradient : function() {
+            var gradient = this.context.createLinearGradient(0,0,0,Config.PLANE_SIZE * 0.7);
+            gradient.addColorStop(0,"#91c8ef");
+            gradient.addColorStop(1,"#e9faff");
+            this.context.fillStyle = gradient;
+            this.context.fillRect( 0, 0, Config.PLANE_SIZE * 2, Config.PLANE_SIZE );
+        },
         generateGrid : function() {
             this.context.save();
 
-            this.context.strokeStyle = 'rgba(240,240,240,0.6)';
+            this.context.strokeStyle = 'rgba(250,250,250,0.3)';
             this.context.lineWidth = 1;
             // this.context.globalCompositeOperation = 'source-atop';
 
-            for (var x = Config.GRID_SIZE; x <= Config.PLANE_SIZE; x += Config.GRID_SIZE) {
+            for (var x = Config.GRID_SIZE; x <= Config.PLANE_SIZE * 2; x += Config.GRID_SIZE) {
                 this.context.beginPath();
                 
                 this.context.moveTo( x, 0 ); 
-                this.context.lineTo( x, Config.PLANE_SIZE );
+                this.context.lineTo( x, Config.PLANE_SIZE * 2 );
                 
                 this.context.closePath();
                 this.context.stroke();
@@ -362,7 +412,7 @@
                 this.context.beginPath();
                 
                 this.context.moveTo( 0, y ); 
-                this.context.lineTo( Config.PLANE_SIZE, y );
+                this.context.lineTo( Config.PLANE_SIZE * 2, y );
                 
                 this.context.closePath();
                 this.context.stroke();
@@ -370,12 +420,32 @@
 
             this.context.restore();
         },
+        renderClouds : function() {
+            this.context.drawImage( Cloud1, 0, 0, 320, 120, 0, 0, 320, 120);
+            // this.context.drawImage( Cloud2, 0,0, 300, 400, Config.PLANE_SIZE/ 2, Config.PLANE_SIZE/ 3, 300, 400);
+            // this.context.drawImage( Cloud3, 0,0, 300, 400, Config.PLANE_SIZE/ 2, Config.PLANE_SIZE/ 4, 300, 400);
+        },
+        renderRocket : function() {
+            this.context.drawImage( Rocket,0,0, 321, 654, this.rocket.x, this.rocket.y, 321, 654);
+            this.rocket.x += 7;
+            this.rocket.y -= 10;
+
+            if ( this.rocket.y < -654 ) {
+                this.rocket.y = 1000;
+                this.rocket.x = -100;
+            }
+        },
         render : function() {
 
-            this.context.clearRect( 0, 0, Config.PLANE_SIZE, Config.PLANE_SIZE );
-            // this.context.drawImage( Grass,0,0 );
+            if ( this.stopped ) {
+                return;
+            };
 
+            this.context.clearRect( 0, 0, Config.PLANE_SIZE * 2, Config.PLANE_SIZE );
+            this.generateGradient();
             this.generateGrid();
+            
+            this.renderRocket();
 
             var l = this.scene.children.length;
 
@@ -385,6 +455,7 @@
                 } 
                 
             }
+            this.renderClouds();
         }
     }
 
@@ -392,9 +463,9 @@
         var _pilot = window._pilot || false;
         
         if( _pilot ) {
-            Game.pilot( new Player(Helper.random(1,15) * Config.GRID_SIZE, Helper.random(1,15) * Config.GRID_SIZE, Helper.randomName(), Helper.randomColor(), true) );
+            Game.pilot( new Player(Helper.random(1,10) * Config.GRID_SIZE, Helper.random(1,10) * Config.GRID_SIZE, Helper.randomName(), Helper.randomColor(), true) );
         } else {
-            Game.initialize( new Player(Helper.random(1,15) * Config.GRID_SIZE, Helper.random(1,15) * Config.GRID_SIZE, Helper.randomName(), Helper.randomColor(), true) );
+            Game.initialize( new Player(Helper.random(1,10) * Config.GRID_SIZE, Helper.random(1,10) * Config.GRID_SIZE, Helper.randomName(), Helper.randomColor(), true) );
         }
         
     });
