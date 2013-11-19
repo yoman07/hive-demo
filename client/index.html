@@ -8,6 +8,11 @@
 </head>
 <body>
     <div id="controls">
+        <div id="console">
+            <select multiple>
+                <option>Demo started</option>
+            </select>
+        </div>
         <div id="up"><img src="asset/arrow_up.png" alt="up"></div>
         <div id="left"><img src="asset/arrow_left.png" alt="left"></div>
         <div id="down"><img src="asset/arrow_down.png" alt="down"></div>
@@ -16,6 +21,34 @@
     <div class="stage">
         <canvas id="canvas" width="800" height="600"></canvas>
     </div>
+    <script type="text/javascript">
+
+        ;(function() {
+            var lastTime = 0;
+            var vendors = ['webkit', 'moz'];
+            for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+                window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+                window.cancelAnimationFrame =
+                  window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
+            }
+
+            if (!window.requestAnimationFrame)
+                window.requestAnimationFrame = function(callback, element) {
+                    var currTime = new Date().getTime();
+                    var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+                    var id = window.setTimeout(function() { callback(currTime + timeToCall); },
+                      timeToCall);
+                    lastTime = currTime + timeToCall;
+                    return id;
+                };
+
+            if (!window.cancelAnimationFrame)
+                window.cancelAnimationFrame = function(id) {
+                    clearTimeout(id);
+                };
+        }());
+
+    </script>
     <script type="text/javascript" src="js/zepto.min.js"></script>
     <script type="text/javascript" src="js/socket.io.js"></script>
     <script type="text/javascript" src="js/app.js"></script>

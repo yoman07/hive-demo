@@ -1,17 +1,17 @@
-(function() {
+;(function() {
 	"use strict";
 
-    window.requestAnimFrame = (function(){
-        return window.requestAnimationFrame ||
-            window.webkitRequestAnimationFrame ||
-            window.mozRequestAnimationFrame;
-    })();
+    // window.requestAnimFrame = (function(){
+    //     return window.requestAnimationFrame ||
+    //         window.webkitRequestAnimationFrame ||
+    //         window.mozRequestAnimationFrame;
+    // })();
 
-    if ( !window.requestAnimFrame ) {
-        window.requestAnimFrame = function( callback ) {
-            window.setTimeout(callback, 1000 / 30);
-        };
-    }
+    // if ( !window.requestAnimFrame ) {
+    //     window.requestAnimFrame = function( callback ) {
+    //         window.setTimeout(callback, 1000 / 30);
+    //     };
+    // }
 
     var Config = {
         SERVER_ADDR : 'http://144.76.114.228',
@@ -215,6 +215,9 @@
         context : null,
         socket : null,
         player : null,
+        now : 0,
+        last : 0,
+        delta : 0,
         rocket : {
             x : -100,
             y : 1000
@@ -243,10 +246,18 @@
             this.$canvas = $('#canvas');
             this.context = this.$canvas[0].getContext('2d');
             this.player = player;
+            this.$console = $('#console select');
 
             this.setupScene();
             this.initNetwork();
             this.setupControls();
+        },
+        console : function( message ) {
+            var val = this.$console.find('option').length;
+
+            this.$console
+                .append( $('<option>').val( val ).text( message ) )
+                .val( val );
         },
         initNetwork : function() {
             var self = this;
@@ -263,13 +274,14 @@
                 this.socket.on('connect', function ( data ) {
                     self.scene.children = [];
 
+                    self.console( 'Połączony! Grasz jako ' + self.player._name );
                     self.scene.children.push( self.player );
                     self.socket.emit('player.new', self.player.serialize() );
                 });
 
                 this.socket.on('disconnect', function ( data ) {
                     
-                    // alert('disconnected!');
+                    self.console( 'Zostałeś rozłączony!' );
                 });
 
                 this.socket.on('player.all', function ( data ) {
@@ -287,6 +299,7 @@
                     var pla = self.scene.find( data.name );
                     
                     if ( pla ) {
+                        self.console( data.name + ' wyszedł');
                         self.scene.children.splice( self.scene.children.indexOf( pla ), 1);
                     }
                 });
@@ -295,6 +308,7 @@
                     var pla = self.scene.find( data.name );
                     
                     if ( !pla ) {
+                        self.console( 'Przychodzi ' + data.name );
                         pla = new Player( data.x, data.y, data.name, data.color );
                         self.scene.children.push( pla );    
                     } else {
@@ -338,9 +352,10 @@
                 }
             });
 
-            $('#ui button').on('click.controls', function() {
-                self.player._name = $.trim( $('#ui .name').val() );
-            });
+
+            // $('#ui button').on('click.controls', function() {
+            //     self.player._name = $.trim( $('#ui .name').val() );
+            // });
         },
         setupControls : function() {
             var self = this;
@@ -370,6 +385,10 @@
                     self.socket.emit('player.move', self.player.serialize() );    
                 }
             });
+
+            $('#console').on('click.demo', function() {
+                $(this).toggleClass('off');
+            });
         },
         stop : function() {
             if( !this.stopped ) {
@@ -380,9 +399,15 @@
             this.stopped = false;
             
         },
-        loop : function() {
-            window.requestAnimFrame( Game.loop );
+        loop : function( time ) {
+            Game.setDelta();
             Game.render();
+            window.requestAnimationFrame( Game.loop );
+        },
+        setDelta : function() {
+            this.now = Date.now();
+            this.delta = (this.now - this.last) / 1000; // seconds since last frame
+            this.last = this.now;
         },
         generateGradient : function() {
             var gradient = this.context.createLinearGradient(0,0,0,Config.PLANE_SIZE * 0.7);
@@ -421,14 +446,14 @@
             this.context.restore();
         },
         renderClouds : function() {
-            this.context.drawImage( Cloud1, 0, 0, 320, 120, 0, 0, 320, 120);
-            // this.context.drawImage( Cloud2, 0,0, 300, 400, Config.PLANE_SIZE/ 2, Config.PLANE_SIZE/ 3, 300, 400);
-            // this.context.drawImage( Cloud3, 0,0, 300, 400, Config.PLANE_SIZE/ 2, Config.PLANE_SIZE/ 4, 300, 400);
+            this.context.drawImage( Cloud1, 0, 0, 311, 104, 311, 404, 311, 104);
+            this.context.drawImage( Cloud3, 0, 0, 192, 64, 192, 64, 192, 64);
+            this.context.drawImage( Cloud2, 0, 0, 256, 93, 480, 193, 256, 93);
         },
         renderRocket : function() {
             this.context.drawImage( Rocket,0,0, 321, 654, this.rocket.x, this.rocket.y, 321, 654);
-            this.rocket.x += 7;
-            this.rocket.y -= 10;
+            this.rocket.x += 70 * this.delta;
+            this.rocket.y -= 100 * this.delta;
 
             if ( this.rocket.y < -654 ) {
                 this.rocket.y = 1000;
