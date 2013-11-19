@@ -378,6 +378,7 @@
                     break;
                     case 32:
                         // self.stop();
+                        $('#console').toggle()
                     break;
                 }
 
@@ -386,8 +387,8 @@
                 }
             });
 
-            $('#console').on('click.demo', function() {
-                $(this).toggleClass('off');
+            $('#console select').on('click.demo', function() {
+                $('#console').toggleClass('off');
             });
         },
         stop : function() {
@@ -446,18 +447,25 @@
             this.context.restore();
         },
         renderClouds : function() {
-            this.context.drawImage( Cloud1, 0, 0, 311, 104, 311, 404, 311, 104);
+            this.context.drawImage( Cloud1, 0, 0, 311, 104, 511, 404, 311, 104);
             this.context.drawImage( Cloud3, 0, 0, 192, 64, 192, 64, 192, 64);
             this.context.drawImage( Cloud2, 0, 0, 256, 93, 480, 193, 256, 93);
+            this.context.drawImage( Cloud2, 0, 0, 256, 93, 180, 603, 556, 203);
+        },
+        renderClouds2 : function() {
+            this.context.drawImage( Cloud1, 0, 0, 311, 104, 311, 404, 111, 54);
+            this.context.drawImage( Cloud3, 0, 0, 192, 64, 292, 64, 242, 64);
+            this.context.drawImage( Cloud2, 0, 0, 256, 93, 180, 303, 256, 93);
         },
         renderRocket : function() {
             this.context.drawImage( Rocket,0,0, 321, 654, this.rocket.x, this.rocket.y, 321, 654);
             this.rocket.x += 70 * this.delta;
             this.rocket.y -= 100 * this.delta;
 
-            if ( this.rocket.y < -654 ) {
-                this.rocket.y = 1000;
-                this.rocket.x = -100;
+            if ( this.rocket.y < -700 ) {
+                // this.rocket.y = 1000;
+                // this.rocket.x = -100;
+                // this.rocket = null;
             }
         },
         render : function() {
@@ -470,7 +478,11 @@
             this.generateGradient();
             this.generateGrid();
             
-            this.renderRocket();
+            if ( !!this.rocket ) {
+                this.renderRocket();
+            }
+
+            this.renderClouds();
 
             var l = this.scene.children.length;
 
@@ -480,7 +492,7 @@
                 } 
                 
             }
-            this.renderClouds();
+            this.renderClouds2();
         }
     }
 

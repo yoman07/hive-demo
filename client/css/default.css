@@ -54,6 +54,7 @@ html, body {
 #right {}
 
 #console {
+    display: none;
     position: fixed;
     width: 100%;
     left: 0px;
@@ -66,6 +67,7 @@ html, body {
 }
 #console > select {
     width: 20%;
+    min-width: 100px;
     height: 100%;
     overflow-x: hidden;
     overflow-y: auto;
