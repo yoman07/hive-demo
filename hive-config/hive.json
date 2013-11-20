@@ -4,7 +4,7 @@
 
 	"acceptors" : 100,
         "port" : 7878,
-        "allowed_origins" : ["http://pl.dev", "ws://localhost", "null", "http://localhost"],
+        "allowed_origins" : ["http://pl.dev", "ws://localhost", "null", "http://localhost", "http://192.168.116.158"],
 
 	"direct_websocket" : true,
 	"websocket_ping_timeout" : 2000,
@@ -15,10 +15,10 @@
     "socketio" : {
 	"heartbeat_timeout" : 15000,
 	"reconnect_timeout" : 120000,
-	"poll_timeout" : 500,
+	"poll_timeout" : 5,
 	"init_timeout" : 5000,
 	"session_timeout" : 3600000,
-	"transports" : ["websocket", "flashsocket", "xhr-polling"]
+	"transports" : ["websocket", "xhr-polling"]
     },
 
     "clients" : "./clients.json",
