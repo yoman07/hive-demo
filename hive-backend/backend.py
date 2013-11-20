@@ -64,14 +64,19 @@ class BackendHTTPRequestHandler(BaseHTTPRequestHandler):
 		return
 
         if self.path == "/cleanup":
+		(length,) = self.headers["Content-Length"],
+		state = json.loads(self.rfile.read(int(length)))
+		sid = state["sid"]
+
+		player = players[sid]
+
+		actions = {"name" : "player.bye",
+                           "args" : [player]}
+                h.request("http://localhost:9000/api/dev123123/pubsub/publish/player.all",
+                          "POST", json.dumps(actions))
+
+		del players[sid]
 		return
-            # This is just a convenience API to make the nickname available again.
-            #(length,) = self.headers["Content-Length"],
-            #state = json.loads(self.rfile.read(int(length)))
-            #nick = state["state"]["nick"]
-            #users.remove(nick)
-            #self._reply(200, "")
-            #return
 
         else:
             # A bad API call. Well damn.

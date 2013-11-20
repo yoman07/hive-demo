@@ -71,61 +71,6 @@
     },
 
     "hooks" : {
-        "auth" : [
-            {
-                "hook" : "cp.post",
-                "args" : {
-                    "connector" : "backend",
-                    "endpoint" : "/auth"
-                }
-            }
-        ],
-        "private.send" : [
-            {
-                "hook" : "cp.put",
-                "args" : {
-                    "connector" : "backend",
-                    "endpoint" : "/private_send"
-                }
-            }
-        ],
-        "private.seen" : [
-            {
-                "hook" : "cp.put",
-                "args" : {
-                    "connector" : "backend",
-                    "endpoint" : "/private_seen"
-                }
-            }
-        ],
-        "rooster.get" : [
-            {
-                "hook" : "cp.post",
-                "args" : {
-                    "connector" : "backend",
-                    "endpoint" : "/rooster_get"
-                }
-            }
-        ],
-        "presence.appear" : [
-            {
-                "hook" : "cp.put",
-                "args" : {
-                    "connector" : "backend",
-                    "endpoint" : "/presence_appear"
-                }
-            }
-        ],
-        "presence.reappear" : [
-            {
-                "hook" : "cp.put",
-                "args" : {
-                    "connector" : "backend",
-                    "endpoint" : "/presence_reappear"
-                }
-            }
-        ],
-
 	"on_disconnect" : [
 	    {
 		"hook" : "cp.put",
@@ -133,20 +78,6 @@
                     "endpoint" : "/cleanup",
                     "connector" : "backend"
                 }
-	    }
-	],
-
-	"pubsub.unsubscribe" : [
-	    {
-		"hook" : "pubsub.unsubscribe",
-		"args" : "public"
-	    }
-	],
-
-	"pubsub.subscribe" : [
-	    {
-		"hook" : "pubsub.subscribe",
-		"args" : "public"
 	    }
 	],
 	"player.new" : [
