@@ -48,30 +48,29 @@
         randomColor : function() {
             return "#" + ( ( 1<<24 ) * Math.random() | 0 ).toString( 16 );
         },
+        pro : function() {
+            var a = [
+                'the Great',
+                'the Villain',
+                'the Maiden',
+                'the King',
+                'the Knight',
+                'the Lover',
+                'the Horse',
+                'the Peasant',
+                'the Programmer',
+                'the Cook',
+                'the Priest',
+                'the Mystery Man',
+                'the Zombie'
+            ];
+
+            return a[ Helper.random(0, a.length - 1 )] + ' ' + this.random(1,9999);
+        },
         randomName : function() {
-            return 'Luki ' + Pro() + ' ' + this.random(1,9999);
+            return 'Player ' + Helper.pro();
         }
     };
-
-    function Pro() {
-        var a = [
-            'the Great',
-            'the Villain',
-            'the Maiden',
-            'the King',
-            'the Knight',
-            'the Lover',
-            'the Horse',
-            'the Peasant',
-            'the Programmer',
-            'the Cook',
-            'the Priest',
-            'the Mystery Man',
-            'the Zombie'
-        ];
-
-        return a[ Helper.random(0, a.length - 1 )];
-    }
 
     function Player(x,y,name,color,ctrl) {
         this.x = x;
@@ -366,7 +365,7 @@
 
             self.pilotControls();
 
-            $(window).on('keyup', function( event ) {
+            $(document).on('keyup', function( event ) {
                 switch( event.keyCode ) {
                     case 40:
                         self.player.moveDown();
@@ -511,13 +510,24 @@
     }
 
     $(document).ready(function() {
-        var _pilot = window._pilot || false;
         
-        if( _pilot ) {
-            Game.pilot( new Player(Helper.random(1,10) * Config.GRID_SIZE, Helper.random(1,10) * Config.GRID_SIZE, Helper.randomName(), Helper.randomColor(), true) );
-        } else {
-            Game.initialize( new Player(Helper.random(1,10) * Config.GRID_SIZE, Helper.random(1,10) * Config.GRID_SIZE, Helper.randomName(), Helper.randomColor(), true) );
-        }
+        $('#init button').on('click', function() {
+            var nick = $.trim( $('#init .nick').val() );
+
+            if ( !nick || nick.length < 1 ) {
+                nick = Helper.randomName();
+            } else {
+
+                if ( nick.length > 12 ) {
+                    nick = nick.substr(0, 11);
+                }
+                nick += ' ' + Helper.pro();
+            }
+
+            $('#init').remove();
+
+            Game.initialize( new Player(Helper.random(1,10) * Config.GRID_SIZE, Helper.random(1,10) * Config.GRID_SIZE, nick, Helper.randomColor(), true) );
+        });        
         
     });
 })();

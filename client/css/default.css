@@ -8,7 +8,7 @@ html, body {
     background-color: #eee;
 }
 
-* {
+#controls, #stage {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -52,6 +52,12 @@ html, body {
 #down {}
 #left {}
 #right {}
+
+#init {
+    padding: 30px;
+    position: relative;
+    z-index: 9;
+}
 
 #console {
     display: none;
