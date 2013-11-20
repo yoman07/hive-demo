@@ -38,6 +38,9 @@
     var Cloud3 = new Image();
     Cloud3.src = 'asset/cloud2.png';
 
+    var Logo = new Image();
+    Logo.src = 'asset/brainly.png';
+
     var Helper = {
         random : function( min, max ) {
             return Math.round( min + Math.random() * max );
@@ -192,7 +195,7 @@
             );
 
             context.fillStyle = '#222';
-            context.font = 'italic bold 15px sans-serif';
+            context.font = 'italic bold 18px sans-serif';
             context.textBaseline = 'bottom';
             context.fillText( this._name, this.x + Config.GRID_SIZE, this.y);
 
@@ -220,7 +223,8 @@
         delta : 0,
         rocket : {
             x : -100,
-            y : 1000
+            y : 1000,
+            stop : false
         },
         scene : {
             children : [],
@@ -406,6 +410,11 @@
             window.requestAnimationFrame( Game.loop );
         },
         setDelta : function() {
+
+            if( this.last === 0 ) {
+                this.last = Date.now();
+            }
+
             this.now = Date.now();
             this.delta = (this.now - this.last) / 1000; // seconds since last frame
             this.last = this.now;
@@ -458,14 +467,12 @@
             this.context.drawImage( Cloud2, 0, 0, 256, 93, 180, 303, 256, 93);
         },
         renderRocket : function() {
-            this.context.drawImage( Rocket,0,0, 321, 654, this.rocket.x, this.rocket.y, 321, 654);
-            this.rocket.x += 70 * this.delta;
-            this.rocket.y -= 100 * this.delta;
+            this.context.drawImage( Rocket,0,0, 321, 654, this.rocket.x, this.rocket.y, 421, 804);
+            this.rocket.x += 15 * this.delta;
+            this.rocket.y -= 30 * this.delta;
 
             if ( this.rocket.y < -700 ) {
-                // this.rocket.y = 1000;
-                // this.rocket.x = -100;
-                // this.rocket = null;
+                this.rocket.stop = true;
             }
         },
         render : function() {
@@ -478,7 +485,7 @@
             this.generateGradient();
             this.generateGrid();
             
-            if ( !!this.rocket ) {
+            if ( !this.rocket.stop ) {
                 this.renderRocket();
             }
 
@@ -489,10 +496,17 @@
             for ( var i = 0; i < l; i++ ) {
                 if ( this.scene.children[i] ) {
                     this.scene.children[i].render( this.context );    
-                } 
+                }
                 
             }
             this.renderClouds2();
+
+            this.context.fillStyle = '#222';
+            this.context.font = 'italic bold 18px sans-serif';
+            this.context.textBaseline = 'bottom';
+            this.context.fillText( 'Grasz jako: ' + this.player._name, 250, 55);
+
+            this.context.drawImage( Logo, 0, 0, 637, 172, 5, 5, 212, 57);
         }
     }
 
