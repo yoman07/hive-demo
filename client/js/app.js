@@ -14,7 +14,7 @@
     // }
 
     var Config = {
-        SERVER_ADDR : 'http://144.76.114.228',
+        SERVER_ADDR : 'http://127.0.0.1',
         PLANE_SIZE : 800,
         GRID_SIZE : 50,
         SPEED : 50,
