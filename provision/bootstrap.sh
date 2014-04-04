@@ -9,7 +9,7 @@ sudo apt-get -y install erlang git make supervisor python-pip
 # Install HTTP server package for python backend
 pip install httplib2
 
-git clone https://github.com/brainly/hive.git /home/vagrant/hive
+git clone -b origin-fix https://github.com/brainly/hive.git /home/vagrant/hive
 cp /home/vagrant/hive-demo/hive-config/* /home/vagrant/hive/etc/
 make -C /home/vagrant/hive
 mkdir /var/log/hive
