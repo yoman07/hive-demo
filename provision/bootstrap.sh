@@ -17,7 +17,9 @@ mkdir /var/log/hive
 # Copy hive supervisor configuration
 cp /vagrant/provision/hive.conf /etc/supervisor/conf.d/hive.conf
 
-# @TODO copy supervisor configuration for python
+# Copy hive-demo backend supervisor configuration
+cp /vagrant/provision/backend.conf /etc/supervisor/conf.d/backend.conf
+
 
 # Restart supervisor to reload configuration
 /etc/init.d/supervisor stop
