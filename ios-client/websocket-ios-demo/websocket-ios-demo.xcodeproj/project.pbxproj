@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		39BD922C18F2C77700B56083 /* PlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 39BD922B18F2C77700B56083 /* PlayerView.m */; };
 		39F9752618EDB5230046EC24 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 39F9752518EDB5230046EC24 /* Foundation.framework */; };
 		39F9752818EDB5230046EC24 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 39F9752718EDB5230046EC24 /* CoreGraphics.framework */; };
 		39F9752A18EDB5230046EC24 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 39F9752918EDB5230046EC24 /* UIKit.framework */; };
@@ -49,6 +50,8 @@
 
 /* Begin PBXFileReference section */
 		34AAE36A90ED4E129DA06AFA /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
+		39BD922A18F2C77700B56083 /* PlayerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerView.h; sourceTree = "<group>"; };
+		39BD922B18F2C77700B56083 /* PlayerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerView.m; sourceTree = "<group>"; };
 		39F9752218EDB5230046EC24 /* websocket-ios-demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "websocket-ios-demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		39F9752518EDB5230046EC24 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		39F9752718EDB5230046EC24 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -160,6 +163,8 @@
 				39F9757218EDBB800046EC24 /* GameBoardViewController.m */,
 				39F9757518EDC1060046EC24 /* SocketClient.h */,
 				39F9757618EDC1060046EC24 /* SocketClient.m */,
+				39BD922A18F2C77700B56083 /* PlayerView.h */,
+				39BD922B18F2C77700B56083 /* PlayerView.m */,
 			);
 			path = "websocket-ios-demo";
 			sourceTree = "<group>";
@@ -361,6 +366,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				39F9753C18EDB5230046EC24 /* ViewController.m in Sources */,
+				39BD922C18F2C77700B56083 /* PlayerView.m in Sources */,
 				39F9757318EDBB800046EC24 /* GameBoardViewController.m in Sources */,
 				39F9757718EDC1060046EC24 /* SocketClient.m in Sources */,
 				39F9753618EDB5230046EC24 /* AppDelegate.m in Sources */,

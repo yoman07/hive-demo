@@ -10,4 +10,5 @@
 
 @interface GameBoardViewController : UIViewController
 
+@property (nonatomic,strong) NSString *nick;
 @end

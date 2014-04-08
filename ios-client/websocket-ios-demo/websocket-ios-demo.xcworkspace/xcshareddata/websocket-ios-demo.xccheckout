@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>68623EFE-5647-44AB-B3CD-191DCDAD2FB5</string>
+	<key>IDESourceControlProjectName</key>
+	<string>websocket-ios-demo</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>0E03E903-CF56-4FAE-9BAB-BEF1FF68F5FE</key>
+		<string>https://github.com/yoman07/hive-demo</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>ios-client/websocket-ios-demo/websocket-ios-demo.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>0E03E903-CF56-4FAE-9BAB-BEF1FF68F5FE</key>
+		<string>../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/yoman07/hive-demo</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>0E03E903-CF56-4FAE-9BAB-BEF1FF68F5FE</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>0E03E903-CF56-4FAE-9BAB-BEF1FF68F5FE</string>
+			<key>IDESourceControlWCCName</key>
+			<string>hive-demo</string>
+		</dict>
+	</array>
+</dict>
+</plist>
