@@ -25,7 +25,8 @@
         UP : 3,
         DOWN : 0,
         SCALE : 1,
-        FRAMES : 9
+        FRAMES : 9,
+        frameSkip : 2
     };
 
     var Rocket = new Image();
@@ -194,11 +195,11 @@
             );
 
             context.fillStyle = '#222';
-            context.font = 'italic bold 18px sans-serif';
+            context.font = 'italic bold 16px sans-serif';
             context.textBaseline = 'bottom';
-            context.fillText( this._name, this.x + Config.GRID_SIZE, this.y);
+            context.fillText( this._name, this.x, this.y);
 
-            if ( this.lastUpdate < 1 ) {
+            if ( this.lastUpdate < Config.frameSkip ) {
                 this.lastUpdate++;
             } else {
                 this.lastUpdate = 0;
@@ -221,7 +222,7 @@
         last : 0,
         delta : 0,
         rocket : {
-            x : -100,
+            x : -400,
             y : 1000,
             stop : false
         },
@@ -324,8 +325,11 @@
             var self = this;
 
             function resize() {
-                self.$canvas.attr('width', Config.PLANE_SIZE * 2 + 'px');
-                self.$canvas.attr('height', Config.PLANE_SIZE + 'px');
+                // self.$canvas.attr('width', Config.PLANE_SIZE * 2 + 'px');
+                // self.$canvas.attr('height', Config.PLANE_SIZE + 'px');
+
+                self.$canvas.attr('width', window.innerWidth + 'px');
+                self.$canvas.attr('height', window.innerHeight + 'px');
             }
 
             $(window).on('resize', resize);
@@ -419,11 +423,13 @@
             this.last = this.now;
         },
         generateGradient : function() {
-            var gradient = this.context.createLinearGradient(0,0,0,Config.PLANE_SIZE * 0.7);
+            // var gradient = this.context.createLinearGradient(0,0,0,Config.PLANE_SIZE * 0.7);
+            var gradient = this.context.createLinearGradient(0,0,0,window.innerHeight);
             gradient.addColorStop(0,"#91c8ef");
             gradient.addColorStop(1,"#e9faff");
             this.context.fillStyle = gradient;
-            this.context.fillRect( 0, 0, Config.PLANE_SIZE * 2, Config.PLANE_SIZE );
+            // this.context.fillRect( 0, 0, Config.PLANE_SIZE * 2, Config.PLANE_SIZE );
+            this.context.fillRect( 0, 0, window.innerWidth, window.innerHeight );
         },
         generateGrid : function() {
             this.context.save();
@@ -432,7 +438,8 @@
             this.context.lineWidth = 1;
             // this.context.globalCompositeOperation = 'source-atop';
 
-            for (var x = Config.GRID_SIZE; x <= Config.PLANE_SIZE * 2; x += Config.GRID_SIZE) {
+            // for (var x = Config.GRID_SIZE; x <= Config.PLANE_SIZE * 2; x += Config.GRID_SIZE) {
+            for (var x = Config.GRID_SIZE; x <= window.innerWidth; x += Config.GRID_SIZE) {
                 this.context.beginPath();
                 
                 this.context.moveTo( x, 0 ); 
@@ -442,7 +449,7 @@
                 this.context.stroke();
             }
 
-            for ( var y = Config.GRID_SIZE; y <= Config.PLANE_SIZE; y += Config.GRID_SIZE) {
+            for ( var y = Config.GRID_SIZE; y <= window.innerHeight; y += Config.GRID_SIZE) {
                 this.context.beginPath();
                 
                 this.context.moveTo( 0, y ); 
@@ -471,7 +478,9 @@
             this.rocket.y -= 30 * this.delta;
 
             if ( this.rocket.y < -700 ) {
-                this.rocket.stop = true;
+                // this.rocket.stop = true;
+                this.rocket.x = 0;
+                this.rocket.y = -1500;
             }
         },
         render : function() {
@@ -480,7 +489,7 @@
                 return;
             };
 
-            this.context.clearRect( 0, 0, Config.PLANE_SIZE * 2, Config.PLANE_SIZE );
+            this.context.clearRect( 0, 0, window.innerWidth, window.innerHeight );
             this.generateGradient();
             this.generateGrid();
             
@@ -503,7 +512,7 @@
             this.context.fillStyle = '#222';
             this.context.font = 'italic bold 18px sans-serif';
             this.context.textBaseline = 'bottom';
-            this.context.fillText( 'Grasz jako: ' + this.player._name, 250, 55);
+            this.context.fillText( 'Grasz jako: ' + this.player._name, 20, 100);
 
             this.context.drawImage( Logo, 0, 0, 637, 172, 5, 5, 212, 57);
         }

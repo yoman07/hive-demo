@@ -17,10 +17,15 @@
                 <option>Demo started</option>
             </select>
         </div>
-        <div id="up"><img src="asset/arrow_up.png" alt="up"></div>
-        <div id="left"><img src="asset/arrow_left.png" alt="left"></div>
-        <div id="down"><img src="asset/arrow_down.png" alt="down"></div>
-        <div id="right"><img src="asset/arrow_right.png" alt="right"></div>
+        <div class="top">
+            <div style="visibility:hidden"><img src="asset/arrow_up.png" alt="left"></div>
+            <div id="up"><img src="asset/arrow_up.png" alt="up"></div>    
+        </div>
+        <div class="bottom">
+            <div id="left"><img src="asset/arrow_left.png" alt="left"></div>
+            <div id="down"><img src="asset/arrow_down.png" alt="down"></div>
+            <div id="right"><img src="asset/arrow_right.png" alt="right"></div>
+        </div>
     </div>
     <div class="stage">
         <canvas id="canvas" width="800" height="600"></canvas>
